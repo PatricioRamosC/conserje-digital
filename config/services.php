@@ -32,7 +32,6 @@ return [
     ],
 
     'apis' => [
-        'login-manager-url' => env('LOGIN_MANAGER_VALID_TOKEN'),
-        // 'login-manager-url' => env('LOGIN_MANAGER_URL'),
+        'login_manager_url' => env('URL_TOKEN_VALIDATION'),
     ],
 ];
