@@ -22,7 +22,7 @@ class Controller extends BaseController
         if ($payload != null) {
             $responseData['payload'] = $payload;
         }
-        return response()->json([$responseData], $statusCode);
+        return response()->json($responseData, $statusCode);
     }
 
     public function responseOK($payload = null, $errCode = Response::HTTP_OK) {
@@ -37,7 +37,7 @@ class Controller extends BaseController
             'message'       => trans('error-code.' . $errCode)
         ];
         // Log::error($responseData);
-        return response()->json([$responseData], $errCode);
+        return response()->json($responseData, $errCode);
     }
 
     public function setResponseErrBusiness($errCode = Response::HTTP_INTERNAL_SERVER_ERROR) {
@@ -45,7 +45,7 @@ class Controller extends BaseController
             'error_code'    => $errCode,
             'message'       => trans('error-code.' . $errCode)
         ];
-        return response()->json([$responseData], $errCode);
+        return response()->json($responseData, $errCode);
     }
 
     public function getToken(Request $request) {

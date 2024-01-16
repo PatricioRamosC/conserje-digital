@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Condominio;
 
 use Throwable;
-use App\Models\TipoNivel;
+use App\Models\Condominio\Nivel;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class TipoNivelController extends Controller
+class NivelController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($id)
     {
         try {
-            $tipoNiveles = TipoNivel::all();
-            return $this->responseOK($tipoNiveles);
+            $niveles = Nivel::where('condominio_id', $id);
+            return $this->responseOK($niveles);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -31,16 +32,19 @@ class TipoNivelController extends Controller
     {
         try {
             $request->validate([
-                'nombre' => 'required',
-                'habitacional' => 'required|boolean',
-                // Agrega aquí otras validaciones según tus campos
+                'nombre'        => 'required',
+                'nivel'         => 'required|integer',
+                'condominio_id' => 'required|exists:condominios,id',
+                'tipo_nivel_id' => 'required|exists:tipo_niveles,id',
+                // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
+
         try {
-            $tipoNivel = TipoNivel::create($request->all());
-            return $this->responseOK($tipoNivel, Response::HTTP_CREATED);
+            $nivel = Nivel::create($request->all());
+            return $this->responseOK($nivel, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -52,8 +56,8 @@ class TipoNivelController extends Controller
     public function show($id)
     {
         try {
-            $tipoNivel = TipoNivel::findOrFail($id);
-            return $this->responseOK($tipoNivel);
+            $nivel = Nivel::findOrFail($id);
+            return $this->responseOK($nivel);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -68,17 +72,19 @@ class TipoNivelController extends Controller
     {
         try {
             $request->validate([
-                'nombre' => 'required',
-                'habitacional' => 'required|boolean',
-                // Agrega aquí otras validaciones según tus campos
+                'nombre'        => 'required',
+                'nivel'         => 'required|integer',
+                'tipo_nivel_id' => 'required|exists:tipo_niveles,id',
+                // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
+
         try {
-            $tipoNivel = TipoNivel::findOrFail($id);
-            $tipoNivel->update($request->all());
-            return $this->responseOK($tipoNivel);
+            $nivel = Nivel::findOrFail($id);
+            $nivel->update($request->all());
+            return $this->responseOK($nivel);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -90,9 +96,9 @@ class TipoNivelController extends Controller
     public function destroy($id)
     {
         try {
-            $tipoNivel = TipoNivel::findOrFail($id);
-            $tipoNivel->delete();
-            return $this->responseOK($tipoNivel);
+            $nivel = Nivel::findOrFail($id);
+            $nivel->delete();
+            return $this->responseOK($nivel);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Condominio;
 
 use Throwable;
-use App\Models\PropietarioCondominios;
+use App\Models\Condominio\Administrador;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class PropietarioCondominiosController extends Controller
+class AdministradorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +19,8 @@ class PropietarioCondominiosController extends Controller
     public function index()
     {
         try {
-            $propietarioCondominios = PropietarioCondominios::all();
-            return $this->responseOK($propietarioCondominios);
+            $administradores = Administrador::all();
+            return $this->responseOK($administradores);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -31,17 +33,18 @@ class PropietarioCondominiosController extends Controller
     {
         try {
             $request->validate([
-                'propietario_id' => 'required|exists:propietarios,id',
-                'condominio_id'  => 'required|exists:condominios,id',
-                // Agrega otras validaciones según tus campos
+                'nombre' => 'required',
+                'paterno' => 'required',
+                'materno' => 'required',
+                'telefono' => 'required',
+                'correo_electronico' => 'required|email',
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
-
         try {
-            $propietarioCondominio = PropietarioCondominios::create($request->all());
-            return $this->responseOK($propietarioCondominio, Response::HTTP_CREATED);
+            $administrador = Administrador::create($request->all());
+            return $this->responseOK($administrador, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -53,8 +56,8 @@ class PropietarioCondominiosController extends Controller
     public function show($id)
     {
         try {
-            $propietarioCondominio = PropietarioCondominios::findOrFail($id);
-            return $this->responseOK($propietarioCondominio);
+            $administrador = Administrador::findOrFail($id);
+            return $this->responseOK($administrador);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -69,18 +72,19 @@ class PropietarioCondominiosController extends Controller
     {
         try {
             $request->validate([
-                'propietario_id' => 'required|exists:propietarios,id',
-                'condominio_id'  => 'required|exists:condominios,id',
-                // Agrega otras validaciones según tus campos
+                'nombre' => 'required',
+                'paterno' => 'required',
+                'materno' => 'required',
+                'telefono' => 'required',
+                'correo_electronico' => 'required|email',
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
-
         try {
-            $propietarioCondominio = PropietarioCondominios::findOrFail($id);
-            $propietarioCondominio->update($request->all());
-            return $this->responseOK($propietarioCondominio);
+            $administrador = Administrador::findOrFail($id);
+            $administrador->update($request->all());
+            return $this->responseOK($administrador);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -92,9 +96,9 @@ class PropietarioCondominiosController extends Controller
     public function destroy($id)
     {
         try {
-            $propietarioCondominio = PropietarioCondominios::findOrFail($id);
-            $propietarioCondominio->delete();
-            return $this->responseOK($propietarioCondominio);
+            $administrador = Administrador::findOrFail($id);
+            $administrador->delete();
+            return $this->responseOK($administrador);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

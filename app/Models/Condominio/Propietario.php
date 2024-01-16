@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Condominio;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,5 +20,9 @@ class Propietario extends Model
         'telefono',
         'fecha_nacimiento',
     ];
+
+    public function condominios() {
+        return $this->hasManyThrough(Condominio::class, PropietarioCondominio::class);
+    }
 
 }

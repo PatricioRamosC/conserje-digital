@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Condominio;
 
 use Throwable;
-use App\Models\Administrador;
+use App\Models\Condominio\TipoPropiedad;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class AdministradorController extends Controller
+class TipoPropiedadController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($condominio_id)
     {
         try {
-            $administradores = Administrador::all();
-            return $this->responseOK($administradores);
+            $tiposPropiedad = TipoPropiedad::where('condominio_id', $condominio_id)
+                    ->orderBy('nombre', 'asc');
+            return $this->responseOK($tiposPropiedad);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -33,17 +34,15 @@ class AdministradorController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                'paterno' => 'required',
-                'materno' => 'required',
-                'telefono' => 'required',
-                'correo_electronico' => 'required|email',
+                // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
+
         try {
-            $administrador = Administrador::create($request->all());
-            return $this->responseOK($administrador, Response::HTTP_CREATED);
+            $tipoPropiedad = TipoPropiedad::create($request->all());
+            return $this->responseOK($tipoPropiedad, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -55,8 +54,8 @@ class AdministradorController extends Controller
     public function show($id)
     {
         try {
-            $administrador = Administrador::findOrFail($id);
-            return $this->responseOK($administrador);
+            $tipoPropiedad = TipoPropiedad::findOrFail($id);
+            return $this->responseOK($tipoPropiedad);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -72,18 +71,16 @@ class AdministradorController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                'paterno' => 'required',
-                'materno' => 'required',
-                'telefono' => 'required',
-                'correo_electronico' => 'required|email',
+                // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
+
         try {
-            $administrador = Administrador::findOrFail($id);
-            $administrador->update($request->all());
-            return $this->responseOK($administrador);
+            $tipoPropiedad = TipoPropiedad::findOrFail($id);
+            $tipoPropiedad->update($request->all());
+            return $this->responseOK($tipoPropiedad);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -95,9 +92,9 @@ class AdministradorController extends Controller
     public function destroy($id)
     {
         try {
-            $administrador = Administrador::findOrFail($id);
-            $administrador->delete();
-            return $this->responseOK($administrador);
+            $tipoPropiedad = TipoPropiedad::findOrFail($id);
+            $tipoPropiedad->delete();
+            return $this->responseOK($tipoPropiedad);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

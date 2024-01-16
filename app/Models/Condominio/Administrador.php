@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Condominio;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +23,10 @@ class Administrador extends Model
     public function condominios()
     {
         return $this->hasMany(Condominio::class);
+    }
+
+    public function barrios() {
+        return $this->hasMany(Barrio::class);
     }
 
 }

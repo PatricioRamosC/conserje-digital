@@ -1,27 +1,29 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Visitas;
 
 use Throwable;
-use App\Models\Condominio;
+use App\Models\Visitas\Visita;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class CondominioController extends Controller
+class VisitaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($condominio_id)
     {
         try {
-            // $condominios = Condominio::all();
-            $condominios = Condominio::with('administrador', 'comuna.region')
-                        // ->get()
-                        ->paginate(env('PAGINATE_CONDOMINIOS', 20));
-            return $this->responseOK($condominios);
+            $visitas = Visita::whereHas('propiedad', function ($query) use ($condominio_id) {
+                    $query->where('condominio_id', $condominio_id);
+                })
+                ->with('visitante')
+                ->paginate(env('PAGINATE_VISITAS', env('PAGINATE', 50)));
+            return $this->responseOK($visitas);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -34,19 +36,20 @@ class CondominioController extends Controller
     {
         try {
             $request->validate([
-                'nombre'            => 'required',
-                'direccion'         => 'required',
-                'numero'            => 'required',
-                'codigo_postal'     => 'required',
-                'comuna_id'         => 'required|exists:comunas,id',
-                'administrador_id'  => 'required|exists:administradores,id',
+                'fecha_inicio'       => 'required',
+                'fecha_fin'          => 'nullable',
+                'visita_motivo_id'   => 'required',
+                'visitante_id'       => 'required',
+                'propiedad_id'       => 'required|exists:propiedades,id',
+                // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
+
         try {
-            $condominio = Condominio::create($request->all());
-            return $this->responseOK($condominio, Response::HTTP_CREATED);
+            $visita = Visita::create($request->all());
+            return $this->responseOK($visita, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -58,8 +61,8 @@ class CondominioController extends Controller
     public function show($id)
     {
         try {
-            $condominio = Condominio::findOrFail($id);
-            return $this->responseOK($condominio);
+            $visita = Visita::findOrFail($id);
+            return $this->responseOK($visita);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -74,20 +77,21 @@ class CondominioController extends Controller
     {
         try {
             $request->validate([
-                'nombre'            => 'required',
-                'direccion'         => 'required',
-                'numero'            => 'required',
-                'codigo_postal'     => 'required',
-                'comuna_id'         => 'required|exists:comunas,id',
-                'administrador_id'  => 'required|exists:administradores,id',
+                'fecha_inicio'       => 'required',
+                'fecha_fin'          => 'nullable',
+                'visita_motivo_id'   => 'required',
+                'visitante_id'       => 'required',
+                'propiedad_id'       => 'required|exists:propiedades,id',
+                // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
+
         try {
-            $condominio = Condominio::findOrFail($id);
-            $condominio->update($request->all());
-            return $this->responseOK($condominio);
+            $visita = Visita::findOrFail($id);
+            $visita->update($request->all());
+            return $this->responseOK($visita);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -99,9 +103,9 @@ class CondominioController extends Controller
     public function destroy($id)
     {
         try {
-            $condominio = Condominio::findOrFail($id);
-            $condominio->delete();
-            return $this->responseOK($condominio);
+            $visita = Visita::findOrFail($id);
+            $visita->delete();
+            return $this->responseOK($visita);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

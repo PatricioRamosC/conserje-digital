@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administracion;
 
 use Throwable;
-use App\Models\Barrio;
+use App\Models\Administracion\Comuna;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class BarrioController extends Controller
+class ComunaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +18,8 @@ class BarrioController extends Controller
     public function index()
     {
         try {
-            $barrios = Barrio::all();
-            return $this->responseOK($barrios);
+            $comunas = Comuna::all();
+            return $this->responseOK($comunas);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -32,16 +33,17 @@ class BarrioController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                'condominio_id' => 'required|exists:condominios,id',
-                'administrador_id' => 'required|exists:administradores,id',
+                'region_id' => 'required|exists:regiones,id',
+                'conara_sii' => 'required',
+                'codigo_tesoreria' => 'required',
                 // Agrega aquí otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
         try {
-            $barrio = Barrio::create($request->all());
-            return $this->responseOK($barrio, Response::HTTP_CREATED);
+            $comuna = Comuna::create($request->all());
+            return $this->responseOK($comuna, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -53,8 +55,8 @@ class BarrioController extends Controller
     public function show($id)
     {
         try {
-            $barrio = Barrio::findOrFail($id);
-            return $this->responseOK($barrio);
+            $comuna = Comuna::findOrFail($id);
+            return $this->responseOK($comuna);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -70,17 +72,18 @@ class BarrioController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                'condominio_id' => 'required|exists:condominios,id',
-                'administrador_id' => 'required|exists:administradores,id',
+                'region_id' => 'required|exists:regiones,id',
+                'conara_sii' => 'required',
+                'codigo_tesoreria' => 'required',
                 // Agrega aquí otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
         try {
-            $barrio = Barrio::findOrFail($id);
-            $barrio->update($request->all());
-            return $this->responseOK($barrio);
+            $comuna = Comuna::findOrFail($id);
+            $comuna->update($request->all());
+            return $this->responseOK($comuna);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -92,9 +95,9 @@ class BarrioController extends Controller
     public function destroy($id)
     {
         try {
-            $barrio = Barrio::findOrFail($id);
-            $barrio->delete();
-            return $this->responseOK($barrio);
+            $comuna = Comuna::findOrFail($id);
+            $comuna->delete();
+            return $this->responseOK($comuna);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

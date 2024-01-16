@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Condominio;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,5 +16,13 @@ class TipoNivel extends Model
         'nombre',
         'habitacional',
     ];
+
+    public function niveles() {
+        return $this->hasMany(Nivel::class);
+    }
+
+    public function condominio() {
+        return $this->belongsTo(Condominio::class);
+    }
 
 }

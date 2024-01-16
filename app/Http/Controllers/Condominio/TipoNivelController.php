@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Condominio;
 
 use Throwable;
-use App\Models\TipoPropiedad;
+use App\Models\Condominio\TipoNivel;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class TipoPropiedadController extends Controller
+class TipoNivelController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($id)
     {
         try {
-            $tiposPropiedad = TipoPropiedad::all();
-            return $this->responseOK($tiposPropiedad);
+            $tipoNiveles = TipoNivel::where('condominio_id', $id)
+                    ->orderBy('nivel', 'asc');
+            return $this->responseOK($tipoNiveles);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -32,15 +34,16 @@ class TipoPropiedadController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                // Agrega otras validaciones según tus campos
+                'habitacional' => 'required|boolean',
+                'condominio_id' => 'required|exists:condominios,id',
+                // Agrega aquí otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
-
         try {
-            $tipoPropiedad = TipoPropiedad::create($request->all());
-            return $this->responseOK($tipoPropiedad, Response::HTTP_CREATED);
+            $tipoNivel = TipoNivel::create($request->all());
+            return $this->responseOK($tipoNivel, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -52,8 +55,8 @@ class TipoPropiedadController extends Controller
     public function show($id)
     {
         try {
-            $tipoPropiedad = TipoPropiedad::findOrFail($id);
-            return $this->responseOK($tipoPropiedad);
+            $tipoNivel = TipoNivel::findOrFail($id);
+            return $this->responseOK($tipoNivel);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -69,16 +72,16 @@ class TipoPropiedadController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                // Agrega otras validaciones según tus campos
+                'habitacional' => 'required|boolean',
+                // Agrega aquí otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
-
         try {
-            $tipoPropiedad = TipoPropiedad::findOrFail($id);
-            $tipoPropiedad->update($request->all());
-            return $this->responseOK($tipoPropiedad);
+            $tipoNivel = TipoNivel::findOrFail($id);
+            $tipoNivel->update($request->all());
+            return $this->responseOK($tipoNivel);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -90,9 +93,9 @@ class TipoPropiedadController extends Controller
     public function destroy($id)
     {
         try {
-            $tipoPropiedad = TipoPropiedad::findOrFail($id);
-            $tipoPropiedad->delete();
-            return $this->responseOK($tipoPropiedad);
+            $tipoNivel = TipoNivel::findOrFail($id);
+            $tipoNivel->delete();
+            return $this->responseOK($tipoNivel);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Condominio;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,5 +15,9 @@ class TipoPropiedad extends Model
         'id',
         'nombre',
     ];
+
+    public function propiedades() {
+        return $this->hasMany(Propiedad::class);
+    }
 
 }

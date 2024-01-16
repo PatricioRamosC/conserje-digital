@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Visitas;
 
 use Throwable;
-use App\Models\Propietario;
+use App\Models\Visitas\Visitante;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class PropietarioController extends Controller
+class VisitanteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($condominio_id)
     {
         try {
-            $propietarios = Propietario::all();
-            return $this->responseOK($propietarios);
+            $visitantes = Visitante::where('condominio_id', $condominio_id);
+            return $this->responseOK($visitantes);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -31,12 +32,13 @@ class PropietarioController extends Controller
     {
         try {
             $request->validate([
-                'nombre'            => 'required',
-                'paterno'           => 'required',
-                'materno'           => 'required',
-                'correo_electronico' => 'required|email',
-                'telefono'          => 'required',
-                'fecha_nacimiento'  => 'required|date',
+                'cedula_identidad'   => 'required',
+                'nombre'             => 'required',
+                'telefono'           => 'required',
+                'correo'             => 'required|email',
+                'foto'               => 'nullable',
+                'firma'              => 'nullable',
+                'condominio_id'      => 'required|exists:condominios,id',
                 // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
@@ -44,8 +46,8 @@ class PropietarioController extends Controller
         }
 
         try {
-            $propietario = Propietario::create($request->all());
-            return $this->responseOK($propietario, Response::HTTP_CREATED);
+            $visitante = Visitante::create($request->all());
+            return $this->responseOK($visitante, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -57,8 +59,8 @@ class PropietarioController extends Controller
     public function show($id)
     {
         try {
-            $propietario = Propietario::findOrFail($id);
-            return $this->responseOK($propietario);
+            $visitante = Visitante::findOrFail($id);
+            return $this->responseOK($visitante);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -73,12 +75,13 @@ class PropietarioController extends Controller
     {
         try {
             $request->validate([
-                'nombre'            => 'required',
-                'paterno'           => 'required',
-                'materno'           => 'required',
-                'correo_electronico' => 'required|email',
-                'telefono'          => 'required',
-                'fecha_nacimiento'  => 'required|date',
+                'cedula_identidad'   => 'required',
+                'nombre'             => 'required',
+                'telefono'           => 'required',
+                'correo'             => 'required|email',
+                'foto'               => 'nullable',
+                'firma'              => 'nullable',
+                'condominio_id'      => 'required',
                 // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {
@@ -86,9 +89,9 @@ class PropietarioController extends Controller
         }
 
         try {
-            $propietario = Propietario::findOrFail($id);
-            $propietario->update($request->all());
-            return $this->responseOK($propietario);
+            $visitante = Visitante::findOrFail($id);
+            $visitante->update($request->all());
+            return $this->responseOK($visitante);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -100,9 +103,9 @@ class PropietarioController extends Controller
     public function destroy($id)
     {
         try {
-            $propietario = Propietario::findOrFail($id);
-            $propietario->delete();
-            return $this->responseOK($propietario);
+            $visitante = Visitante::findOrFail($id);
+            $visitante->delete();
+            return $this->responseOK($visitante);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

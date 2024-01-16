@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Administracion;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Condominio\Condominio;
 
 class Comuna extends Model
 {

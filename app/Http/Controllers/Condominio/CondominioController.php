@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Condominio;
 
 use Throwable;
-use App\Models\Nivel;
+use App\Models\Condominio\Condominio;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Controllers\Controller;
 
-class NivelController extends Controller
+class CondominioController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +18,11 @@ class NivelController extends Controller
     public function index()
     {
         try {
-            $niveles = Nivel::all();
-            return $this->responseOK($niveles);
+            // $condominios = Condominio::all();
+            $condominios = Condominio::with('administrador', 'comuna.region')
+                        ->orderBy('nombre', 'asc')
+                        ->paginate(env('PAGINATE_CONDOMINIOS', env('PAGINATE', 50)));
+            return $this->responseOK($condominios);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -31,18 +35,19 @@ class NivelController extends Controller
     {
         try {
             $request->validate([
-                'nombre'        => 'required',
-                'nivel'         => 'required|integer',
-                'tipo_nivel_id' => 'required|exists:tipo_niveles,id',
-                // Agrega otras validaciones según tus campos
+                'nombre'            => 'required',
+                'direccion'         => 'required',
+                'numero'            => 'required',
+                'codigo_postal'     => 'required',
+                'comuna_id'         => 'required|exists:comunas,id',
+                'administrador_id'  => 'required|exists:administradores,id',
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
-
         try {
-            $nivel = Nivel::create($request->all());
-            return $this->responseOK($nivel, Response::HTTP_CREATED);
+            $condominio = Condominio::create($request->all());
+            return $this->responseOK($condominio, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
@@ -54,8 +59,8 @@ class NivelController extends Controller
     public function show($id)
     {
         try {
-            $nivel = Nivel::findOrFail($id);
-            return $this->responseOK($nivel);
+            $condominio = Condominio::findOrFail($id);
+            return $this->responseOK($condominio);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch (Throwable $e) {
@@ -70,19 +75,20 @@ class NivelController extends Controller
     {
         try {
             $request->validate([
-                'nombre'        => 'required',
-                'nivel'         => 'required|integer',
-                'tipo_nivel_id' => 'required|exists:tipo_niveles,id',
-                // Agrega otras validaciones según tus campos
+                'nombre'            => 'required',
+                'direccion'         => 'required',
+                'numero'            => 'required',
+                'codigo_postal'     => 'required',
+                'comuna_id'         => 'required|exists:comunas,id',
+                'administrador_id'  => 'required|exists:administradores,id',
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
-
         try {
-            $nivel = Nivel::findOrFail($id);
-            $nivel->update($request->all());
-            return $this->responseOK($nivel);
+            $condominio = Condominio::findOrFail($id);
+            $condominio->update($request->all());
+            return $this->responseOK($condominio);
         } catch (Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::UPDATE_ERROR);
         }
@@ -94,9 +100,9 @@ class NivelController extends Controller
     public function destroy($id)
     {
         try {
-            $nivel = Nivel::findOrFail($id);
-            $nivel->delete();
-            return $this->responseOK($nivel);
+            $condominio = Condominio::findOrFail($id);
+            $condominio->delete();
+            return $this->responseOK($condominio);
         } catch (ModelNotFoundException $e) {
             return $this->setResponseErr($e, Response::HTTP_NO_CONTENT);
         } catch(Throwable $e) {

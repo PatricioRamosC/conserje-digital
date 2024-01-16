@@ -63,7 +63,7 @@ class ValidateLoginToken
             'error_code'    => $errCode,
             'message'       => trans('error-code.' . $errCode)
         ];
-        return response()->json([$responseData], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json($responseData, Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
 }

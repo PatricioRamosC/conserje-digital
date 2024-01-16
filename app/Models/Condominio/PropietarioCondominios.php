@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Condominio;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Nivel extends Model
+class PropietarioCondominio extends Model
 {
     use HasFactory;
 
-    protected $table = 'niveles';
+    protected $table = 'propietario_condominios';
 
     protected $fillable = [
         'id',
-        'nombre',
-        'nivel',
-        'tipo_nivel_id',
+        'propietario_id',
+        'condominio_id',
     ];
 
 }
