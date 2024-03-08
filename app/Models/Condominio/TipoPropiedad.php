@@ -14,6 +14,7 @@ class TipoPropiedad extends Model
     protected $fillable = [
         'id',
         'nombre',
+        'condominio_id',
     ];
 
     public function propiedades() {

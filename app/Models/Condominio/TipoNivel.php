@@ -15,6 +15,7 @@ class TipoNivel extends Model
         'id',
         'nombre',
         'habitacional',
+        'condominio_id',
     ];
 
     public function niveles() {

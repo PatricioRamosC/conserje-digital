@@ -16,7 +16,6 @@ class Propiedad extends Model
         'id',
         'nombre',
         'tipo_propiedad_id',
-        'condominio_id',
         'nivel_id',
         'propietario_id',
         'barrio_id',

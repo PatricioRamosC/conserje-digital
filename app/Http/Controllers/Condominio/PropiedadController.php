@@ -9,13 +9,15 @@ use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class PropiedadController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($id)
+    public function index($condominio_id)
     {
         try {
             $propiedades = Propiedad::with([
@@ -25,8 +27,9 @@ class PropiedadController extends Controller
                         'propietario',
                         'barrio'
                     ])
-                    ->where('condominio_id', $id)
-                    ->orderBy()
+                    ->whereHas('tipoPropiedad', function($query) use ($condominio_id) {
+                        $query->where('condominio_id', $condominio_id);
+                    })
                     ->paginate(env('PAGINATE_PROPIEDADES', env('PAGINATE', 50)));
             return $this->responseOK($propiedades);
         } catch(Throwable $e) {
@@ -43,7 +46,6 @@ class PropiedadController extends Controller
             $request->validate([
                 'nombre'            => 'required',
                 'tipo_propiedad_id' => 'required|exists:tipo_propiedades,id',
-                'condominio_id'     => 'required|exists:condominios,id',
                 'nivel_id'          => 'required|exists:niveles,id',
                 'propietario_id'    => 'required|exists:propietarios,id',
                 'barrio_id'         => 'required|exists:barrios,id',
@@ -57,6 +59,7 @@ class PropiedadController extends Controller
             $propiedad = Propiedad::create($request->all());
             return $this->responseOK($propiedad, Response::HTTP_CREATED);
         } catch(Throwable $e) {
+            Log::error($e);
             return $this->setResponseErr($e, ErrorCodes::CREATE_ERROR);
         }
     }
@@ -85,7 +88,6 @@ class PropiedadController extends Controller
             $request->validate([
                 'nombre'            => 'required',
                 'tipo_propiedad_id' => 'required|exists:tipo_propiedades,id',
-                'condominio_id'     => 'required|exists:condominios,id',
                 'nivel_id'          => 'required|exists:niveles,id',
                 'propietario_id'    => 'required|exists:propietarios,id',
                 'barrio_id'         => 'required|exists:barrios,id',

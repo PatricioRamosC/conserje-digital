@@ -29,15 +29,16 @@ class Controller extends BaseController
         return $this->setResponse($payload, "OK", 0, $errCode);
     }
 
-    public function setResponseErr(Throwable $ex, $errCode = Response::HTTP_INTERNAL_SERVER_ERROR) {
+    public function setResponseErr(Throwable $ex, $errCode, $httpStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR) {
         Log::error("Controller : " . request()->route()->getAction('controller'));
         Log::error($errCode . " : " . $ex->getMessage());
+        Log::error("Trace : " . $ex->getTrace());
         $responseData = [
             'error_code'    => $errCode,
             'message'       => trans('error-code.' . $errCode)
         ];
         // Log::error($responseData);
-        return response()->json($responseData, $errCode);
+        return response()->json($responseData, $httpStatusCode);
     }
 
     public function setResponseErrBusiness($errCode = Response::HTTP_INTERNAL_SERVER_ERROR) {

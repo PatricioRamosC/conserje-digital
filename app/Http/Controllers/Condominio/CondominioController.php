@@ -40,7 +40,7 @@ class CondominioController extends Controller
                 'numero'            => 'required',
                 'codigo_postal'     => 'required',
                 'comuna_id'         => 'required|exists:comunas,id',
-                'administrador_id'  => 'required|exists:administradores,id',
+                'barrios'           => 'required|boolean'
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
@@ -80,7 +80,6 @@ class CondominioController extends Controller
                 'numero'            => 'required',
                 'codigo_postal'     => 'required',
                 'comuna_id'         => 'required|exists:comunas,id',
-                'administrador_id'  => 'required|exists:administradores,id',
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);

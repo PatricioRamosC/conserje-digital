@@ -3,28 +3,26 @@
 namespace App\Http\Controllers\Condominio;
 
 use Throwable;
-use App\Models\Condominio\Propietario;
-use App\Models\Condominio\PropietarioCondominio;
-use Illuminate\Http\Request;
-use App\Constants\ErrorCodes;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Models\Condominio\Residente;
+use App\Constants\ErrorCodes;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
-class PropietarioController extends Controller
+class ResidenteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar los residentes de la propiedad.
      */
-    public function index($condominio_id)
+    public function index($propiedad_id)
     {
         try {
-            $propietarios = Propietario::whereHas('condominios', function ($query) use ($condominio_id) {
-                        $query->where('condominio_id', $condominio_id);
-                    })->get();
-            return $this->responseOK($propietarios);
+            $residentes = Residente::where('propiedad_id', $propiedad_id)
+                    ->get();
+            return $this->responseOK($residentes);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
         }
@@ -37,15 +35,13 @@ class PropietarioController extends Controller
     {
         try {
             $request->validate([
+                'cedula_identidad'  => 'required',
                 'nombre'            => 'required',
                 'paterno'           => 'required',
                 'materno'           => 'required',
-                'correo_electronico' => 'required|email',
                 'telefono'          => 'required',
-                'fecha_nacimiento'  => 'required|date',
-                'condominios'       => 'required|array', // Debe ser un arreglo
-                // 'condominios.*'     => 'required|integer|exists:condominios,id',
-                // Agrega otras validaciones según tus campos
+                'correo'            => 'required|email',
+                'propiedad_id'      => 'exists|propiedad:id',
             ]);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
@@ -53,7 +49,7 @@ class PropietarioController extends Controller
 
         try {
             DB::beginTransaction();
-            $propietario = Propietario::create($request->all());
+            $propietario = Residente::create($request->all());
             foreach($request['condominios'] as $condominio) {
                 $propietario_condominio = PropietarioCondominio::create([
                     'propietario_id' => $propietario->id,
@@ -61,7 +57,7 @@ class PropietarioController extends Controller
                 ]);
             }
             DB::commit();
-            Log::debug('Propietario creado satisfactoriamente ' . json_encode($propietario));
+            Log::debug('Residente creado satisfactoriamente ' . json_encode($propietario));
             return $this->responseOK($propietario, Response::HTTP_CREATED);
         } catch(Throwable $e) {
             DB::rollBack();
@@ -75,7 +71,7 @@ class PropietarioController extends Controller
     public function show($id)
     {
         try {
-            $propietario = Propietario::with('condominios')
+            $propietario = Residente::with('condominios')
                         ->findOrFail($id);
             return $this->responseOK($propietario);
         } catch (ModelNotFoundException $e) {
@@ -106,7 +102,7 @@ class PropietarioController extends Controller
 
         try {
             DB::beginTransaction();
-            $propietario = Propietario::findOrFail($id);
+            $propietario = Residente::findOrFail($id);
             $propietario->update($request->all());
             PropietarioCondominio::where('propietario_id', $propietario->id)
                         ->whereNotIn('condominio_id', $request['condominios'])
@@ -136,7 +132,7 @@ class PropietarioController extends Controller
     public function destroy($id)
     {
         try {
-            $propietario = Propietario::findOrFail($id);
+            $propietario = Residente::findOrFail($id);
             $propietario->delete();
             return $this->responseOK($propietario);
         } catch (ModelNotFoundException $e) {
@@ -145,4 +141,5 @@ class PropietarioController extends Controller
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
     }
+
 }

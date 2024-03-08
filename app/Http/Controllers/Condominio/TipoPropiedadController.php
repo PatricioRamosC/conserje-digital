@@ -19,7 +19,8 @@ class TipoPropiedadController extends Controller
     {
         try {
             $tiposPropiedad = TipoPropiedad::where('condominio_id', $condominio_id)
-                    ->orderBy('nombre', 'asc');
+                    ->orderBy('nombre')
+                    ->get();
             return $this->responseOK($tiposPropiedad);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);
@@ -34,6 +35,7 @@ class TipoPropiedadController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
+                'condominio_id' => 'required|exists:condominios,id',
                 // Agrega otras validaciones según tus campos
             ]);
         } catch(Throwable $e) {

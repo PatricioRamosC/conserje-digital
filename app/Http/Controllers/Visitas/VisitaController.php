@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Visitas;
 
 use Throwable;
 use App\Models\Visitas\Visita;
+use App\Models\Visitas\VisitaMotivo;
 use Illuminate\Http\Request;
 use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
@@ -112,4 +113,5 @@ class VisitaController extends Controller
             return $this->setResponseErr($e, ErrorCodes::VALIDATION_ERROR);
         }
     }
+
 }

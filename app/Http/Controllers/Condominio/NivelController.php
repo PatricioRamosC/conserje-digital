@@ -18,7 +18,9 @@ class NivelController extends Controller
     public function index($id)
     {
         try {
-            $niveles = Nivel::where('condominio_id', $id);
+            $niveles = Nivel::where('condominio_id', $id)
+                ->orderBy('nivel')
+                ->get();
             return $this->responseOK($niveles);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);

@@ -22,7 +22,9 @@ class Propietario extends Model
     ];
 
     public function condominios() {
-        return $this->hasManyThrough(Condominio::class, PropietarioCondominio::class);
+        // return $this->hasManyThrough(Condominio::class, PropietarioCondominio::class);
+        return $this->belongsToMany(Condominio::class, 'propietario_condominios', 'propietario_id', 'condominio_id');
+
     }
 
 }

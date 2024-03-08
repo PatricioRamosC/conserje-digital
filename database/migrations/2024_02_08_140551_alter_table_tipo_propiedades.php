@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('visita_motivos', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre', 100);
+        Schema::table('tipo_propiedades', function (Blueprint $table) {
             $table->unsignedBigInteger('condominio_id');
-            $table->boolean('delivery');
-            $table->boolean('services');
-            $table->timestamps();
-
-            $table->foreign('condominio_id')->references('id')->on('condominios');
+            $table->foreign('condominio_id', 'tipo_propiedades_condominio_id_foreign')->references('id')->on('condominios');
         });
     }
 
@@ -28,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('visita_motivos');
+        Schema::table('tipo_propiedades', function (Blueprint $table) {
+            $table->dropForeign('tipo_propiedades_condominio_id_foreign');
+            $table->dropColumn('condominio_id');
+        });
     }
 };

@@ -18,11 +18,9 @@ return new class extends Migration
             $table->string('numero', 20);
             $table->unsignedBigInteger('codigo_postal');
             $table->unsignedBigInteger('comuna_id');
-            $table->unsignedBigInteger('administrador_id');
             $table->timestamps();
 
             $table->foreign('comuna_id')->references('id')->on('comunas');
-            $table->foreign('administrador_id')->references('id')->on('administradores');
         });
     }
 

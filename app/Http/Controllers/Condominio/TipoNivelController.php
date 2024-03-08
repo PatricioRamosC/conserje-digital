@@ -9,6 +9,7 @@ use App\Constants\ErrorCodes;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class TipoNivelController extends Controller
 {
@@ -18,8 +19,10 @@ class TipoNivelController extends Controller
     public function index($id)
     {
         try {
+            Log::debug("Consultando tipos de niveles para el condominio $id...");
             $tipoNiveles = TipoNivel::where('condominio_id', $id)
-                    ->orderBy('nivel', 'asc');
+                        ->orderBy('nombre')
+                        ->get();
             return $this->responseOK($tipoNiveles);
         } catch(Throwable $e) {
             return $this->setResponseErr($e, ErrorCodes::LIST_ERROR);

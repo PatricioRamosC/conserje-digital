@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('visita_motivos', function (Blueprint $table) {
+        Schema::create('menu_items', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 100);
-            $table->unsignedBigInteger('condominio_id');
-            $table->boolean('delivery');
-            $table->boolean('services');
+            $table->string('view_name');
+            $table->string('text');
             $table->timestamps();
 
-            $table->foreign('condominio_id')->references('id')->on('condominios');
+            $table->unique('view_name', 'menu_items_view_name_unique');
+            $table->unique('view_name', 'menu_items_text_unique');
         });
     }
 
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('visita_motivos');
+        Schema::dropIfExists('menu_items');
     }
 };
